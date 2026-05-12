@@ -78,72 +78,77 @@ sever.py
 ~~~
 import socket
 
-# Create socket
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket()
 
 host = "127.0.0.1"
-port = 12345
+port = 8080
 
-# Bind and listen
-server.bind((host, port))
-server.listen(1)
+print("Server will start on host:", host)
 
-print("Server waiting for connection...")
+s.bind((host, port))
+s.listen(1)
 
-conn, addr = server.accept()
-print("Connected to:", addr)
+print()
+print("Waiting for connection...")
+print()
+
+conn, addr = s.accept()
+print(addr, "has connected to the server")
+print()
 
 while True:
-    # Receive message from client
-    client_msg = conn.recv(1024).decode()
-    print("Client:", client_msg)
+    message = input(">> ")
+    conn.send(message.encode())
+    print("Sent")
+    print()
 
-    if client_msg.lower() == "exit":
+    if message.lower() == "bye":
         break
 
-    # Send message to client
-    msg = input("Server: ")
-    conn.send(msg.encode())
+    incoming_message = conn.recv(1024).decode()
+    print("Client:", incoming_message)
+    print()
 
-    if msg.lower() == "exit":
+    if incoming_message.lower() == "bye":
         break
 
 conn.close()
-server.close()
+s.close()
 ~~~
 client.py
 ~~~
 import socket
 
-# Create socket
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket()
 
-host = "127.0.0.1"
-port = 12345
+host = input("Enter hostname or host IP: ")
+port = 8080
 
-# Connect to server
-client.connect((host, port))
+s.connect((host, port))
+print("Connected to chat server")
 
 while True:
-    # Send message to server
-    msg = input("Client: ")
-    client.send(msg.encode())
+    incoming_message = s.recv(1024).decode()
+    print("Server:", incoming_message)
+    print()
 
-    if msg.lower() == "exit":
+    message = input(">> ")
+    s.send(message.encode())
+    print("Sent")
+    print()
+
+    if message.lower() == "bye":
         break
 
-    # Receive reply from server
-    server_msg = client.recv(1024).decode()
-    print("Server:", server_msg)
-
-    if server_msg.lower() == "exit":
-        break
-
-client.close()
+s.close()
+       
 ~~~
 
 ## Output:
-<img width="1919" height="1018" alt="Screenshot 2026-04-29 113021" src="https://github.com/user-attachments/assets/90eb764a-1115-40fe-8ebb-9a68086e4fbc" />
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3e1f7371-5d77-4762-8977-f7929446da9a" />
+
+
 
 ## Result:
 
